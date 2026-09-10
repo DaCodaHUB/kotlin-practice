@@ -13,15 +13,11 @@ fun Iterable<Task>.completed(): List<Task> = filter { it.status == TaskStatus.DO
  * Preserves the original collection order.
  * TODO: Implement filtering logic
  */
-fun Iterable<Task>.activeWork(): List<Task> {
-    TODO("Implement filtering for tasks that are not DONE")
-}
+fun Iterable<Task>.activeWork(): List<Task> = filter { it.status == TaskStatus.IN_PROGRESS }
 
 /**
  * Groups tasks by priority level.
  * Preserves the original order of tasks within each priority group.
  * TODO: Implement grouping logic
  */
-fun Iterable<Task>.groupByPriority(): Map<TaskPriority, List<Task>> {
-    TODO("Implement grouping by TaskPriority")
-}
+fun Iterable<Task>.groupByPriority(): Map<TaskPriority, List<Task>> = groupBy(Task::priority)
