@@ -34,3 +34,12 @@ data class Project(
     val name: String,
     val memberIds: Set<String>
 )
+
+// TODO: Implement a safe summary function for Task that:
+// - Returns a string containing the task ID and title
+// - Includes assignee information only if assigneeId is not null
+// - Includes description only if it's not null and not blank
+// - Handle the case where description might be an empty string
+fun Task.safeSummary(): String {
+    TODO("Implement safe summary handling nullable fields")
+}
