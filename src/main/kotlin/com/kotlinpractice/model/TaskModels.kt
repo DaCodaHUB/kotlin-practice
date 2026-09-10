@@ -41,5 +41,13 @@ data class Project(
 // - Includes description only if it's not null and not blank
 // - Handle the case where description might be an empty string
 fun Task.safeSummary(): String {
-    TODO("Implement safe summary handling nullable fields")
+    var summary = "id: ${id}, title: $title"
+    assigneeId?.let {
+        summary += ", assigneeId: $assigneeId"
+    }
+    summary += ", status: $status, priority: $priority"
+    description?.let {
+        summary += ", description: $description"
+    }
+    return summary
 }
