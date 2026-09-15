@@ -25,6 +25,20 @@ fun Task.displayLabel(): String =
 
 fun Iterable<Task>.groupByAssignee(): Map<String?, List<Task>> = groupBy(Task::assigneeId)
 
+/**
+ * Beginner #4: Return an assignee-to-task-count report.
+ *
+ * Each key is an assigneeId and its value is the number of input tasks assigned to it.
+ * The null key represents unassigned tasks; include it only when such tasks exist.
+ * Preserve non-null assignee IDs exactly, including empty or blank IDs.
+ * Count every input occurrence once, including repeated tasks, regardless of status or priority.
+ * Include only assignees present in the input; empty input produces an empty map.
+ * Return an immutable report through the read-only Map interface without changing the input.
+ * Later changes to the input collection must not change the report. Key order is unspecified.
+ */
+fun Iterable<Task>.taskCountByAssignee(): Map<String?, Int> =
+    TODO("Beginner #4: implement the assignee-to-task-count report described above")
+
 fun Iterable<Task>.completed(): List<Task> = filter { it.status == TaskStatus.DONE }
 
 /**
