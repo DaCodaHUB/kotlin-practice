@@ -15,7 +15,13 @@ import com.kotlinpractice.model.TaskStatus
  * Do not include the task ID or assignee. Support every priority and status.
  * Example: "[HIGH] Review pull request (IN_PROGRESS) - Check the tests".
  */
-fun Task.displayLabel(): String = TODO("Beginner #3: implement the display label contract above")
+fun Task.displayLabel(): String =
+    "[${priority}] $title (${status})" +
+            if (description != null) {
+                " - $description"
+            } else {
+                ""
+            }
 
 fun Iterable<Task>.groupByAssignee(): Map<String?, List<Task>> = groupBy(Task::assigneeId)
 
@@ -24,13 +30,11 @@ fun Iterable<Task>.completed(): List<Task> = filter { it.status == TaskStatus.DO
 /**
  * Filters tasks to return only active work (non-completed tasks).
  * Preserves the original collection order.
- * TODO: Implement filtering logic
  */
 fun Iterable<Task>.activeWork(): List<Task> = filter { it.status == TaskStatus.IN_PROGRESS }
 
 /**
  * Groups tasks by priority level.
  * Preserves the original order of tasks within each priority group.
- * TODO: Implement grouping logic
  */
 fun Iterable<Task>.groupByPriority(): Map<TaskPriority, List<Task>> = groupBy(Task::priority)

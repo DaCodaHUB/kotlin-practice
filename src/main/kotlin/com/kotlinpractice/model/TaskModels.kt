@@ -35,7 +35,6 @@ data class Project(
     val memberIds: Set<String>
 )
 
-// TODO: Implement a safe summary function for Task that:
 // - Returns a string containing the task ID and title
 // - Includes assignee information only if assigneeId is not null
 // - Includes description only if it's not null and not blank
