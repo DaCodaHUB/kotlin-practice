@@ -37,7 +37,9 @@ fun Iterable<Task>.groupByAssignee(): Map<String?, List<Task>> = groupBy(Task::a
  * Later changes to the input collection must not change the report. Key order is unspecified.
  */
 fun Iterable<Task>.taskCountByAssignee(): Map<String?, Int> =
-    TODO("Beginner #4: implement the assignee-to-task-count report described above")
+    groupBy(Task::assigneeId).mapValues { entry ->
+        entry.value.size
+    }
 
 fun Iterable<Task>.completed(): List<Task> = filter { it.status == TaskStatus.DONE }
 
