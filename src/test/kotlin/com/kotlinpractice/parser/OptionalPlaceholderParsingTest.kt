@@ -21,7 +21,7 @@ class OptionalPlaceholderParsingTest {
     fun `parses complete record with surrounding whitespace and mixed case enums`() {
         assertEquals(
             TaskParseResult.Success(expected.copy(assigneeId = "u-7", description = "Final  review")),
-            parser.parseWithOptionalPlaceholders(
+            parser.parse(
                 "\t T-1 | Ship  report \t| iN_pRoGrEsS | hIgH | u-7 | Final  review \n"
             )
         )
@@ -31,11 +31,11 @@ class OptionalPlaceholderParsingTest {
     fun `accepts omitted optional fields and assignee without description`() {
         assertEquals(
             TaskParseResult.Success(expected),
-            parser.parseWithOptionalPlaceholders("T-1|Ship  report|IN_PROGRESS|HIGH")
+            parser.parse("T-1|Ship  report|IN_PROGRESS|HIGH")
         )
         assertEquals(
             TaskParseResult.Success(expected.copy(assigneeId = "u-7")),
-            parser.parseWithOptionalPlaceholders("T-1|Ship  report|IN_PROGRESS|HIGH|u-7")
+            parser.parse("T-1|Ship  report|IN_PROGRESS|HIGH|u-7")
         )
     }
 
@@ -44,12 +44,12 @@ class OptionalPlaceholderParsingTest {
         for (optional in listOf("", " \t ", "-", " \t- ")) {
             assertEquals(
                 TaskParseResult.Success(expected),
-                parser.parseWithOptionalPlaceholders("T-1|Ship  report|IN_PROGRESS|HIGH|$optional")
+                parser.parse("T-1|Ship  report|IN_PROGRESS|HIGH|$optional")
             )
             for (description in listOf("", " \t ", "-", " - ")) {
                 assertEquals(
                     TaskParseResult.Success(expected),
-                    parser.parseWithOptionalPlaceholders("T-1|Ship  report|IN_PROGRESS|HIGH|$optional|$description")
+                    parser.parse("T-1|Ship  report|IN_PROGRESS|HIGH|$optional|$description")
                 )
             }
         }
@@ -59,11 +59,11 @@ class OptionalPlaceholderParsingTest {
     fun `optional fields are independent`() {
         assertEquals(
             TaskParseResult.Success(expected.copy(description = "Review")),
-            parser.parseWithOptionalPlaceholders("T-1|Ship  report|IN_PROGRESS|HIGH|-|Review")
+            parser.parse("T-1|Ship  report|IN_PROGRESS|HIGH|-|Review")
         )
         assertEquals(
             TaskParseResult.Success(expected.copy(assigneeId = "u-7")),
-            parser.parseWithOptionalPlaceholders("T-1|Ship  report|IN_PROGRESS|HIGH|u-7|-")
+            parser.parse("T-1|Ship  report|IN_PROGRESS|HIGH|u-7|-")
         )
     }
 
@@ -71,21 +71,28 @@ class OptionalPlaceholderParsingTest {
     fun `preserves literal hyphens outside optional placeholders`() {
         assertEquals(
             TaskParseResult.Success(expected.copy(id = "-", title = "-", assigneeId = "--", description = "Follow-up")),
-            parser.parseWithOptionalPlaceholders("-| - |IN_PROGRESS|HIGH|--|Follow-up")
+            parser.parse("-| - |IN_PROGRESS|HIGH|--|Follow-up")
         )
     }
 
     @Test
     fun `rejects malformed field counts with useful reason`() {
         for (input in listOf("", "   ", "T-1", "T-1|Title", "T-1|Title|TODO", "T-1|Title|TODO|LOW|||extra", "T-1|Title|TODO|LOW|||")) {
-            assertEquals(TaskParseResult.Invalid("Expected 4 to 6 fields"), parser.parseWithOptionalPlaceholders(input))
+            assertEquals(TaskParseResult.Invalid("Expected 4 to 6 fields"), parser.parse(input))
+        }
+    }
+
+    @Test
+    fun `validates field count before required text and enums`() {
+        for (input in listOf("| |BAD", "| |BAD|BAD|||")) {
+            assertEquals(TaskParseResult.Invalid("Expected 4 to 6 fields"), parser.parse(input))
         }
     }
 
     @Test
     fun `rejects blank required text before validating enums`() {
         for (input in listOf("|Title|TODO|LOW", " \t |Title|TODO|LOW", "T-1||TODO|LOW", "T-1| \t |BAD|BAD")) {
-            assertEquals(TaskParseResult.Invalid("Task id and title are required"), parser.parseWithOptionalPlaceholders(input))
+            assertEquals(TaskParseResult.Invalid("Task id and title are required"), parser.parse(input))
         }
     }
 
@@ -94,13 +101,13 @@ class OptionalPlaceholderParsingTest {
         for (status in listOf("LATER", "", " \t ", "-")) {
             assertEquals(
                 TaskParseResult.Invalid("Unknown task status"),
-                parser.parseWithOptionalPlaceholders("T-1|Title|$status|BAD")
+                parser.parse("T-1|Title|$status|BAD")
             )
         }
         for (priority in listOf("URGENT", "", " \t ", "-")) {
             assertEquals(
                 TaskParseResult.Invalid("Unknown task priority"),
-                parser.parseWithOptionalPlaceholders("T-1|Title|TODO|$priority")
+                parser.parse("T-1|Title|TODO|$priority")
             )
         }
     }

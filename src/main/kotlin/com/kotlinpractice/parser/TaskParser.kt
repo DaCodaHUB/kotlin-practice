@@ -1,8 +1,6 @@
 package com.kotlinpractice.parser
 
 import com.kotlinpractice.model.Task
-import com.kotlinpractice.model.TaskPriority
-import com.kotlinpractice.model.TaskStatus
 
 sealed interface TaskParseResult {
     data class Success(val task: Task) : TaskParseResult
@@ -35,34 +33,6 @@ class DelimitedTaskParser : TaskParser {
      * - Unrecognized or blank priority: "Unknown task priority".
      * Every pipe is a field separator; quoted or escaped separators are not supported.
      */
-    fun parseWithOptionalPlaceholders(input: String): TaskParseResult =
+    override fun parse(input: String): TaskParseResult =
         TODO("Beginner #5: implement the parsing contract above")
-
-    override fun parse(input: String): TaskParseResult {
-        val fields = input.split('|').map(String::trim)
-        if (fields.size !in 4..6) return TaskParseResult.Invalid("Expected 4 to 6 fields")
-
-        val id = fields[0]
-        val title = fields[1]
-        if (id.isBlank() || title.isBlank()) return TaskParseResult.Invalid("Task id and title are required")
-
-        val status = enumValueOrNull<TaskStatus>(fields[2])
-            ?: return TaskParseResult.Invalid("Unknown task status")
-        val priority = enumValueOrNull<TaskPriority>(fields[3])
-            ?: return TaskParseResult.Invalid("Unknown task priority")
-
-        return TaskParseResult.Success(
-            Task(
-                id = id,
-                title = title,
-                description = fields.getOrNull(5)?.takeIf(String::isNotBlank),
-                status = status,
-                priority = priority,
-                assigneeId = fields.getOrNull(4)?.takeIf(String::isNotBlank)
-            )
-        )
-    }
-
-    private inline fun <reified T : Enum<T>> enumValueOrNull(value: String): T? =
-        enumValues<T>().firstOrNull { it.name.equals(value, ignoreCase = true) }
 }
