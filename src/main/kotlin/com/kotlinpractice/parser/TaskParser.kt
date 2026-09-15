@@ -15,6 +15,29 @@ interface TaskParser {
 
 /** Parses pipe-delimited records: id | title | status | priority | assigneeId | description. */
 class DelimitedTaskParser : TaskParser {
+    /**
+     * Beginner #5: Parse a record with optional-field placeholders.
+     *
+     * Format: id | title | status | priority | assigneeId | description.
+     * Accept exactly 4, 5, or 6 fields; the last two fields are optional, in that order.
+     * Ignore surrounding whitespace in each field, preserving whitespace inside its text.
+     * Missing, empty, or whitespace-only optional fields become null.
+     * Input variation: an optional field containing exactly "-" after surrounding
+     * whitespace is removed also becomes null. A hyphen elsewhere remains literal text;
+     * this placeholder rule does not apply to required fields.
+     * Status and priority accept existing enum names without regard to letter case.
+     *
+     * Return Success with the resulting Task for valid input. For malformed input,
+     * return Invalid rather than throwing, with these reasons in validation order:
+     * - Outside 4..6 fields: "Expected 4 to 6 fields".
+     * - Empty or whitespace-only id or title: "Task id and title are required".
+     * - Unrecognized or blank status: "Unknown task status".
+     * - Unrecognized or blank priority: "Unknown task priority".
+     * Every pipe is a field separator; quoted or escaped separators are not supported.
+     */
+    fun parseWithOptionalPlaceholders(input: String): TaskParseResult =
+        TODO("Beginner #5: implement the parsing contract above")
+
     override fun parse(input: String): TaskParseResult {
         val fields = input.split('|').map(String::trim)
         if (fields.size !in 4..6) return TaskParseResult.Invalid("Expected 4 to 6 fields")
