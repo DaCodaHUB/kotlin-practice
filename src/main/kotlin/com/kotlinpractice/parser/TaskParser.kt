@@ -1,6 +1,8 @@
 package com.kotlinpractice.parser
 
 import com.kotlinpractice.model.Task
+import com.kotlinpractice.model.TaskPriority
+import com.kotlinpractice.model.TaskStatus
 
 sealed interface TaskParseResult {
     data class Success(val task: Task) : TaskParseResult
@@ -33,6 +35,53 @@ class DelimitedTaskParser : TaskParser {
      * - Unrecognized or blank priority: "Unknown task priority".
      * Every pipe is a field separator; quoted or escaped separators are not supported.
      */
-    override fun parse(input: String): TaskParseResult =
-        TODO("Beginner #5: implement the parsing contract above")
+    override fun parse(input: String): TaskParseResult {
+        val fields = input
+            .split("|")
+            .map { it.trim() }
+
+        if (fields.size !in 4..6) {
+            return TaskParseResult.Invalid("Expected 4 to 6 fields")
+        }
+
+        val id = fields[0]
+        val title = fields[1]
+        if (id.isBlank() || title.isBlank()) {
+            return TaskParseResult.Invalid("Task id and title are required")
+        }
+
+        val status = TaskStatus.entries.firstOrNull {
+            it.name.equals(fields[2], ignoreCase = true)
+        } ?: return TaskParseResult.Invalid("Unknown task status")
+
+        val priority = TaskPriority.entries.firstOrNull {
+            it.name.equals(fields[3], ignoreCase = true)
+        } ?: return TaskParseResult.Invalid("Unknown task priority")
+
+        val assigneeId = fields.getOrNull(4)?.let {
+            if (it.isBlank() || it == "-") {
+                null
+            } else {
+                it
+            }
+        }
+        val description = fields.getOrNull(5)?.let {
+            if (it.isBlank() || it == "-") {
+                null
+            } else {
+                it
+            }
+        }
+
+        val task = Task (
+            id = id,
+            title = title,
+            status = status,
+            priority = priority,
+            assigneeId = assigneeId,
+            description = description
+        )
+
+        return TaskParseResult.Success(task)
+    }
 }
