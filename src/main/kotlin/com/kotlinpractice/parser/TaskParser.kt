@@ -9,6 +9,21 @@ sealed interface TaskParseResult {
     data class Invalid(val reason: String) : TaskParseResult
 }
 
+/**
+ * Beginner #6: Return a user-facing, plain-text message for this parser outcome.
+ *
+ * Success: "Parsed task: <id> - <title>" using the task's id and title exactly as stored.
+ * Do not include the task's description, assignee, status, or priority.
+ * Invalid with a nonblank reason: "Unable to parse task: <reason>".
+ * Preserve a nonblank reason exactly, including surrounding whitespace.
+ * Invalid with an empty or whitespace-only reason: "Unable to parse task".
+ * Messages are plain text; no markup escaping is required.
+ * Support outcomes constructed directly as well as those returned by a parser,
+ * including success values with empty or blank id/title text. Do not revalidate
+ * or modify the outcome or its task, and do not change parser behavior.
+ */
+fun TaskParseResult.displayMessage(): String = TODO("Beginner #6")
+
 interface TaskParser {
     fun parse(input: String): TaskParseResult
 }
