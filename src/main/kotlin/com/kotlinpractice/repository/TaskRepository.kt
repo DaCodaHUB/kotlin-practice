@@ -1,6 +1,7 @@
 package com.kotlinpractice.repository
 
 import com.kotlinpractice.model.Task
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,8 +39,28 @@ data class TaskLoadResult(val tasks: List<Task>, val failures: List<TaskProvider
  * load. Existing TaskRepository calls and observations retain their current behavior.
  * No concurrent-loading requirement is imposed by this exercise.
  */
-suspend fun loadTasksWithFailures(providers: List<TaskRepository>): TaskLoadResult =
-    TODO("Intermediate #1: Repository error handling")
+suspend fun loadTasksWithFailures(providers: List<TaskRepository>): TaskLoadResult {
+    val tasks = mutableListOf<Task>()
+    val failures = mutableListOf<TaskProviderFailure>()
+
+    for ((index, provider) in providers.withIndex()) {
+        try {
+            tasks.addAll(provider.getTasks())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            failures.add(TaskProviderFailure(
+                providerIndex = index,
+                cause = e
+            ))
+        }
+    }
+
+    return TaskLoadResult(
+        tasks = tasks,
+        failures = failures
+    )
+}
 
 class InMemoryTaskRepository(initialTasks: Collection<Task> = emptyList()) : TaskRepository {
     private val tasks = MutableStateFlow(initialTasks.distinctBy(Task::id))
