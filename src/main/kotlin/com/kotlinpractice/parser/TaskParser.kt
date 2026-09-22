@@ -22,7 +22,16 @@ sealed interface TaskParseResult {
  * including success values with empty or blank id/title text. Do not revalidate
  * or modify the outcome or its task, and do not change parser behavior.
  */
-fun TaskParseResult.displayMessage(): String = TODO("Beginner #6")
+fun TaskParseResult.displayMessage(): String = when(this) {
+    is TaskParseResult.Success -> "Parsed task: ${task.id} - ${task.title}"
+    is TaskParseResult.Invalid -> {
+        if (reason.isNotBlank()) {
+            "Unable to parse task: $reason"
+        } else {
+            "Unable to parse task"
+        }
+    }
+}
 
 interface TaskParser {
     fun parse(input: String): TaskParseResult
