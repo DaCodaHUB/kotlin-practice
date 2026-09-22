@@ -34,17 +34,34 @@ class InMemoryCache<K, V>(
     private val ttlMillis: Long? = null,
     private val nowMillis: () -> Long = System::currentTimeMillis
 ) : Cache<K, V> {
+
+    private data class CacheEntry<V>(
+        val value: V,
+        val putTimeMillis: Long
+    )
+
+    private val cacheMap = mutableMapOf<K, CacheEntry<V>>()
+
     /** Return the unexpired value for [key], or null on a cache miss. */
-    override fun get(key: K): V? = TODO("Intermediate #2: Cache lookup")
+    override fun get(key: K): V? {
+        val entry = cacheMap[key] ?: return null
+
+        if (ttlMillis != null && nowMillis() - entry.putTimeMillis >= ttlMillis) {
+            cacheMap.remove(key)
+            return null
+        }
+
+        return entry.value
+    }
 
     /** Store [value] for [key], replacing its previous value and restarting its lifetime. */
     override fun put(key: K, value: V) {
-        TODO("Intermediate #2: Cache insertion and replacement")
+        cacheMap[key] = CacheEntry(value, nowMillis())
     }
 
     /** Invalidate [key]; an absent or already expired key requires no action. */
     override fun remove(key: K) {
-        TODO("Intermediate #2: Cache invalidation")
+        cacheMap.remove(key)
     }
 }
 
