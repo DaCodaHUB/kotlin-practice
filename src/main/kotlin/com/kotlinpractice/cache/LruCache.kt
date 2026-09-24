@@ -22,14 +22,79 @@ package com.kotlinpractice.cache
  * order API, or concurrency guarantee. Preserve the existing Cache API and the
  * completed InMemoryCache and InMemoryTaskCache behavior.
  */
-class LruCache<K, V : Any>(capacity: Int) : Cache<K, V> {
+class LruCache<K, V : Any>(
+    private val capacity: Int
+) : Cache<K, V> {
+
+    private data class Node<K, V>(
+        val key: K,
+        var value: V,
+        var left: Node<K, V>?,
+        var right: Node<K, V>?
+    )
+
+    private val cacheMap = mutableMapOf<K, Node<K, V>>()
+    private var head: Node<K, V>? = null
+    private var tail: Node<K, V>? = null
+
     init {
-        TODO("Intermediate #3")
+        require(capacity > 0)
     }
 
-    override fun get(key: K): V? = TODO("Intermediate #3")
+    override fun get(key: K): V? {
+        val node = cacheMap[key] ?: return null
+        removeNode(node)
+        addToFront(node)
+        return node.value
+    }
 
-    override fun put(key: K, value: V): Unit = TODO("Intermediate #3")
+    override fun put(key: K, value: V) {
+        val node = cacheMap[key]
+        if (node != null) {
+            node.value = value
+            removeNode(node)
+            addToFront(node)
+        } else {
+            val node  = Node(key, value, null, null)
+            addToFront(node)
+            cacheMap[key] = node
+            if (cacheMap.size > capacity) {
+                val node = tail
+                cacheMap.remove(node?.key)
+                removeNode(node!!)
+            }
+        }
+    }
 
-    override fun remove(key: K): Unit = TODO("Intermediate #3")
+    override fun remove(key: K) {
+        val node = cacheMap[key] ?: return
+        cacheMap.remove(key)
+        removeNode(node)
+    }
+
+    private fun addToFront(node: Node<K, V>) {
+        if (head == null && tail == null) {
+            head = node
+            tail = node
+        } else {
+            node.right = head
+            head?.left = node
+            head = node
+        }
+    }
+
+    private fun removeNode(node: Node<K, V>) {
+        if (node == head) {
+            head = node.right
+            node.right?.left = null
+        }
+        if (node == tail) {
+            tail = node.left
+            node.left?.right = null
+        }
+        node.left?.right = node.right
+        node.right?.left = node.left
+        node.left = null
+        node.right = null
+    }
 }
