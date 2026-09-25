@@ -42,6 +42,6 @@ git checkout -b exercise/collections
 
 Other useful branch names include `exercise/coroutines`, `exercise/flow`, `exercise/concurrency`, and `exercise/cache`. Exercise documents give requirements and test coverage expectations without solutions.
 
-Intermediate #3 is prepared as an unsolved [generic LRU cache exercise](exercises/intermediate/03-generic-cache.md).
-Its `LruCacheTest` tests intentionally fail at TODOs until the exercise is completed.
-Intermediate #2's generic TTL cache remains complete.
+Intermediate #4 is prepared as an unsolved [coroutine service exercise](exercises/intermediate/04-coroutine-service.md).
+Its `ProjectServiceTest` tests intentionally fail at the TODO until the exercise is completed.
+Intermediate #2's generic TTL cache and #3's generic LRU cache remain complete.

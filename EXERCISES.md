@@ -16,7 +16,7 @@ All exercises extend the working task-management codebase. Start each on a separ
 - [Repository error handling](exercises/intermediate/01-repository-error-handling.md)
 - [Cache implementation](exercises/intermediate/02-cache-implementation.md)
 - [Generic cache: bounded storage and LRU eviction](exercises/intermediate/03-generic-cache.md)
-- [Coroutine service](exercises/intermediate/04-coroutine-service.md)
+- [Coroutine service: concurrent project loading](exercises/intermediate/04-coroutine-service.md)
 - [Flow transformation](exercises/intermediate/05-flow-transformation.md)
 - [Deduplication](exercises/intermediate/06-deduplication.md)
 - [Retry behavior](exercises/intermediate/07-retry-behavior.md)
